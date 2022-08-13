@@ -35,9 +35,9 @@ resource "aws_route_table" "internet_gateway_route_table" {
 }
 
 resource "aws_route" "outbound_public_internet" {
-    route_table_id = aws_route_table.internet_gateway_route_table.id
-    destination_cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id
+  route_table_id         = aws_route_table.internet_gateway_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.internet_gateway.id
 }
 
 resource "aws_route_table_association" "internet_gateway_to_public_subnet_assoc" {
@@ -113,9 +113,9 @@ resource "aws_route_table" "private_subnet_route_table" {
 }
 
 resource "aws_route" "outbound_nat_gateway" {
-    route_table_id = aws_route_table.private_subnet_route_table.id
-    destination_cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat_gateway.id
+  route_table_id         = aws_route_table.private_subnet_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_nat_gateway.nat_gateway.id
 }
 
 resource "aws_route_table_association" "outbound_nat_gateway_to_private_subnet_assoc" {
