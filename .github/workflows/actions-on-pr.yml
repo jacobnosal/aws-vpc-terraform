@@ -18,13 +18,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # validate templates
-      - name: Initialize Packer
-        uses: hashicorp/packer-github-actions@v0.2.0
-        with:
-          command: init
-          target: packer/nginx_ami.pkr.hcl
-
-      # validate templates
       - name: Validate Template
         uses: hashicorp/packer-github-actions@v0.2.0
         with:
