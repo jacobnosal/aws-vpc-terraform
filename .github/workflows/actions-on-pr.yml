@@ -1,0 +1,109 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  packer:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # validate templates
+      - name: Initialize Packer
+        uses: hashicorp/packer-github-actions@v0.2.0
+        with:
+          command: init
+          target: packer/nginx_ami.pkr.hcl
+
+      # validate templates
+      - name: Validate Template
+        uses: hashicorp/packer-github-actions@v0.2.0
+        with:
+          command: validate
+          arguments: -syntax-only
+          target: packer/nginx_ami.pkr.hcl
+
+  terraform:
+    runs-on: ubuntu-20.04
+    # env:
+    #   TF_VAR_notification_emails: ${{ secrets.TF_VAR_NOTIFICATION_EMAILS }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.0
+        with:
+          terraform_version: 1.2.7
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Initialize Terraform
+        run: |
+          terraform init
+
+      - name: Validate Terraform Module
+        run: |
+          terraform validate
+
+      - name: Plan Terraform
+        id: plan
+        continue-on-error: true
+        run: |
+          terraform plan -var-file dev.tfvars -input=false -no-color -out=tfplan \
+          && terraform show -no-color tfplan   
+
+      - name: Reformat Plan
+        if: steps.plan.outcome == 'success'
+        run: |
+          echo '${{ steps.plan.outputs.stdout || steps.plan.outputs.stderr }}' \
+          | sed -E 's/^([[:space:]]+)([-+])/\2\1/g' > plan.txt          
+
+      - name: Put Plan in Env Var
+        if: steps.plan.outcome == 'success'
+        run: |
+          PLAN=$(cat plan.txt)
+          echo "PLAN<<EOF" >> $GITHUB_ENV
+          echo "$PLAN" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV  
+
+      - name: Post Plan and Apply to GitHub PR
+        if: steps.plan.outcome == 'success'
+        uses: mshick/add-pr-comment@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'github-actions[bot]'
+          message: |
+            **Plan Results**:
+
+            ```diff
+            ${{ env.PLAN }}
+            ``` 
+
+      - name: Post Plan Failure
+        if: steps.plan.outcome == 'failure'
+        uses: mshick/add-pr-comment@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token-user-login: 'github-actions[bot]'
+          message: |
+            **Plan failed**:
+
+            ```
+            ${{ steps.plan.outputs.stderr }}
+            ``` 
