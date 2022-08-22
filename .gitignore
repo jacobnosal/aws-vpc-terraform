@@ -31,3 +31,4 @@ override.tf.json
 **/*.env
 **/*lock.hcl
 **/keys/**
+**/.vscode/**
