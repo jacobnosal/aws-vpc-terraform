@@ -11,7 +11,6 @@
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 4.26.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.2.3 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.1 |
 
 ## Modules
@@ -44,10 +43,6 @@ No modules.
 | [aws_subnet.private_subnet](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.public_subnet](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_vpc.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
-| [local_file.private_vm_0_ssh_private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [local_file.private_vm_0_ssh_public_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [local_file.public_vm_0_ssh_private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [local_file.public_vm_0_ssh_public_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [tls_private_key.public_vm_0](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
@@ -60,5 +55,12 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_private_key_pem"></a> [private\_key\_pem](#output\_private\_key\_pem) | (String, Sensitive) Private key data in PEM (RFC 1421) format. |
+| <a name="output_private_vm_0_ip"></a> [private\_vm\_0\_ip](#output\_private\_vm\_0\_ip) | n/a |
+| <a name="output_public_key_pem"></a> [public\_key\_pem](#output\_public\_key\_pem) | (String) Public key data in PEM (RFC 1421) format. NOTE: the underlying libraries that generate this value append a <br> at the end of the PEM. In case this disrupts your use case, we recommend using trimspace(). |
+| <a name="output_public_vm_0_ip"></a> [public\_vm\_0\_ip](#output\_public\_vm\_0\_ip) | The public IP address assigned to the instance, if applicable. NOTE: If you are using an aws\_eip with your instance, you should refer to the EIP's address directly and not use public\_ip as this field will change after the EIP is attached. |
+| <a name="output_ssh_private_key"></a> [ssh\_private\_key](#output\_ssh\_private\_key) | (String, Sensitive) Private key data in OpenSSH PEM (RFC 4716) format. |
+| <a name="output_ssh_public_key"></a> [ssh\_public\_key](#output\_ssh\_public\_key) | (String) The public key data in "Authorized Keys" format. This is not populated for ECDSA with curve P224, as it is not supported. NOTE: the underlying libraries that generate this value append a <br> at the end of the PEM. In case this disrupts your use case, we recommend using trimspace(). |
 <!-- END_TF_DOCS -->
