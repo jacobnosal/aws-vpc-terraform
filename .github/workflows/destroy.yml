@@ -1,4 +1,4 @@
-name: CD
+name: Destroy
 
 on: [ workflow_dispatch ]
 
@@ -30,13 +30,13 @@ jobs:
         run: |
           terraform validate
 
-      - name: Plan Terraform Destory
+      - name: Plan Terraform Destroy
         id: plan
         run: |
           terraform plan -destroy -var-file dev.tfvars -input=false -no-color -out=tfplan \
           && terraform show -no-color tfplan   
 
-      - name: Destory Terraform
+      - name: Destroy Terraform
         id: apply
         continue-on-error: true
         run: |
