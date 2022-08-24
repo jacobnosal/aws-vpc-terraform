@@ -20,13 +20,20 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      - name: Setup Packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - \
+          && sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+          && sudo apt-get update && sudo apt-get install packer
+
+      - name: Init Packer
+        run: |
+          packer init packer/
+
       # validate templates
-      - name: Validate Template
-        uses: hashicorp/packer-github-actions@v0.2.0
-        with:
-          command: build
-          working_directory: packer/
-          target: nginx_ami.pkr.hcl
+      - name: Build Template
+        run: |
+          packer build packer/nginx_ami.pkr.hcl
 
   terraform:
     runs-on: ubuntu-20.04
