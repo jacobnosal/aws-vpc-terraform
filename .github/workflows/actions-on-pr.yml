@@ -23,6 +23,10 @@ jobs:
           && sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
           && sudo apt-get update && sudo apt-get install packer
 
+      - name: Init Packer
+        run: |
+          packer init packer/
+
       # validate templates
       - name: Validate Template
         run: |
