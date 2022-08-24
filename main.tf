@@ -128,105 +128,85 @@ resource "aws_key_pair" "public_vm_0_key_pair" {
   public_key = tls_private_key.public_vm_0.public_key_openssh
 }
 
-resource "local_file" "public_vm_0_ssh_private_key" {
-  content  = tls_private_key.public_vm_0.private_key_openssh
-  filename = "${var.key_directory}/public_vm_0.pem"
+# Private VM configurations
+resource "aws_key_pair" "private_vm_0_key_pair" {
+  key_name   = "private_vm_0"
+  public_key = tls_private_key.public_vm_0.public_key_openssh
 }
 
-resource "local_file" "public_vm_0_ssh_public_key" {
-  content  = tls_private_key.public_vm_0.public_key_openssh
-  filename = "${var.key_directory}/public_vm_0.pub"
+resource "aws_instance" "private_vm_0" {
+  ami                    = "ami-0cea098ed2ac54925"
+  instance_type          = "t2.micro"
+  availability_zone      = data.aws_availability_zones.available.names[1]
+  key_name               = aws_key_pair.private_vm_0_key_pair.key_name
+  subnet_id              = aws_subnet.private_subnet.id
+  vpc_security_group_ids = [aws_security_group.db_tier_security_group.id]
+
+  root_block_device {
+    volume_type = "gp2"
+    volume_size = 8
+  }
+
+  tags = {
+    Name = "private_vm_0"
+  }
 }
 
-# # Private VM configurations
-# resource "aws_key_pair" "private_vm_0_key_pair" {
-#   key_name   = "private_vm_0"
-#   public_key = tls_private_key.public_vm_0.public_key_openssh
-# }
+resource "aws_security_group" "db_tier_security_group" {
+  name   = "db_tier_security_group"
+  vpc_id = aws_vpc.main.id
 
-# resource "local_file" "private_vm_0_ssh_private_key" {
-#   content  = tls_private_key.public_vm_0.private_key_openssh
-#   filename = "${var.key_directory}/private_vm_0.pem"
-# }
+  tags = {
+    Name = "db_tier_security_group"
+  }
+}
 
-# resource "local_file" "private_vm_0_ssh_public_key" {
-#   content  = tls_private_key.public_vm_0.public_key_openssh
-#   filename = "${var.key_directory}/private_vm_0.pub"
-# }
+resource "aws_security_group_rule" "all_icmp_v4" {
+  description       = "All ICMP v4"
+  type              = "ingress"
+  from_port         = -1
+  to_port           = -1
+  protocol          = "icmp"
+  cidr_blocks       = ["10.0.1.0/24"]
+  security_group_id = aws_security_group.db_tier_security_group.id
+}
 
-# resource "aws_instance" "private_vm_0" {
-#   ami                    = "ami-0cea098ed2ac54925"
-#   instance_type          = "t2.micro"
-#   availability_zone      = data.aws_availability_zones.available.names[1]
-#   key_name               = aws_key_pair.private_vm_0_key_pair.key_name
-#   subnet_id              = aws_subnet.private_subnet.id
-#   vpc_security_group_ids = [aws_security_group.db_tier_security_group.id]
+resource "aws_security_group_rule" "db_tier_allow_80" {
+  description       = "Ingress on port 80."
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["10.0.1.0/24"]
+  security_group_id = aws_security_group.db_tier_security_group.id
+}
 
-#   root_block_device {
-#     volume_type = "gp2"
-#     volume_size = 8
-#   }
+resource "aws_security_group_rule" "db_tier_allow_22" {
+  description       = "Ingress on port 22."
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["10.0.1.0/24"]
+  security_group_id = aws_security_group.db_tier_security_group.id
+}
 
-#   tags = {
-#     Name = "private_vm_0"
-#   }
-# }
+resource "aws_security_group_rule" "allow_3306" {
+  description       = "Ingress on port 3306."
+  type              = "ingress"
+  from_port         = 3306
+  to_port           = 3306
+  protocol          = "tcp"
+  cidr_blocks       = ["10.0.1.0/24"]
+  security_group_id = aws_security_group.db_tier_security_group.id
+}
 
-# resource "aws_security_group" "db_tier_security_group" {
-#   name   = "db_tier_security_group"
-#   vpc_id = aws_vpc.main.id
-
-#   tags = {
-#     Name = "db_tier_security_group"
-#   }
-# }
-
-# resource "aws_security_group_rule" "all_icmp_v4" {
-#   description       = "All ICMP v4"
-#   type              = "ingress"
-#   from_port         = -1
-#   to_port           = -1
-#   protocol          = "icmp"
-#   cidr_blocks       = ["10.0.1.0/24"]
-#   security_group_id = aws_security_group.db_tier_security_group.id
-# }
-
-# resource "aws_security_group_rule" "db_tier_allow_80" {
-#   description       = "Ingress on port 80."
-#   type              = "ingress"
-#   from_port         = 80
-#   to_port           = 80
-#   protocol          = "tcp"
-#   cidr_blocks       = ["10.0.1.0/24"]
-#   security_group_id = aws_security_group.db_tier_security_group.id
-# }
-
-# resource "aws_security_group_rule" "db_tier_allow_22" {
-#   description       = "Ingress on port 22."
-#   type              = "ingress"
-#   from_port         = 22
-#   to_port           = 22
-#   protocol          = "tcp"
-#   cidr_blocks       = ["10.0.1.0/24"]
-#   security_group_id = aws_security_group.db_tier_security_group.id
-# }
-
-# resource "aws_security_group_rule" "allow_3306" {
-#   description       = "Ingress on port 3306."
-#   type              = "ingress"
-#   from_port         = 3306
-#   to_port           = 3306
-#   protocol          = "tcp"
-#   cidr_blocks       = ["10.0.1.0/24"]
-#   security_group_id = aws_security_group.db_tier_security_group.id
-# }
-
-# resource "aws_security_group_rule" "adb_tier_llow_outbound_internet" {
-#   description       = "Egress to public internet."
-#   type              = "egress"
-#   from_port         = 0
-#   to_port           = 65535
-#   protocol          = "all"
-#   cidr_blocks       = ["0.0.0.0/0"]
-#   security_group_id = aws_security_group.db_tier_security_group.id
-# }
+resource "aws_security_group_rule" "adb_tier_llow_outbound_internet" {
+  description       = "Egress to public internet."
+  type              = "egress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "all"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.db_tier_security_group.id
+}
