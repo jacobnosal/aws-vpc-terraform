@@ -20,6 +20,7 @@ source "amazon-ebs" "amzn_nginx" {
     owners      = ["137112412989"]
     most_recent = true
   }
+
   ssh_username = "ec2-user"
 }
 

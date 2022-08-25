@@ -99,8 +99,27 @@ resource "aws_security_group_rule" "allow_outbound_internet" {
   security_group_id = aws_security_group.web_dmz_security_group.id
 }
 
+data "aws_ami" "nginx" {
+  most_recent = true
+  owners      = ["self"]
+  filter {
+    name   = "name"
+    values = ["amzn_nginx-*"]
+  }
+}
+
+resource "aws_ebs_volume" "public_vm_ebs_volume_0" {
+  availability_zone = aws_instance.public_vm_0.availability_zone
+  encrypted         = true
+  size              = 16
+
+  tags = {
+    Name = "public_vm_ebs_volume_0"
+  }
+}
+
 resource "aws_instance" "public_vm_0" {
-  ami                         = "ami-0cea098ed2ac54925"
+  ami                         = data.aws_ami.nginx.image_id
   instance_type               = "t2.micro"
   availability_zone           = data.aws_availability_zones.available.names[0]
   key_name                    = aws_key_pair.public_vm_0_key_pair.key_name
@@ -116,6 +135,12 @@ resource "aws_instance" "public_vm_0" {
   tags = {
     Name = "public_vm_0"
   }
+}
+
+resource "aws_volume_attachment" "public_vm_ebs_volume_0_attachment" {
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.public_vm_ebs_volume_0.id
+  instance_id = aws_instance.public_vm_0.id
 }
 
 resource "tls_private_key" "public_vm_0" {
