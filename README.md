@@ -21,6 +21,7 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_ebs_volume.public_vm_ebs_volume_0](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ebs_volume) | resource |
 | [aws_instance.private_vm_0](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
 | [aws_instance.public_vm_0](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance) | resource |
 | [aws_internet_gateway.internet_gateway](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway) | resource |
@@ -42,23 +43,23 @@ No modules.
 | [aws_security_group_rule.db_tier_allow_80](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [aws_subnet.private_subnet](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_subnet.public_subnet](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
+| [aws_volume_attachment.public_vm_ebs_volume_0_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/volume_attachment) | resource |
 | [aws_vpc.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
 | [tls_private_key.public_vm_0](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [aws_ami.nginx](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_key_directory"></a> [key\_directory](#input\_key\_directory) | n/a | `string` | `"keys/"` | no |
+No inputs.
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_private_key_pem"></a> [private\_key\_pem](#output\_private\_key\_pem) | (String, Sensitive) Private key data in PEM (RFC 1421) format. |
-| <a name="output_private_vm_0_ip"></a> [private\_vm\_0\_ip](#output\_private\_vm\_0\_ip) | n/a |
+| <a name="output_private_vm_0_ip"></a> [private\_vm\_0\_ip](#output\_private\_vm\_0\_ip) | The private IP address assigned to the instance, if applicable. |
 | <a name="output_public_key_pem"></a> [public\_key\_pem](#output\_public\_key\_pem) | (String) Public key data in PEM (RFC 1421) format. NOTE: the underlying libraries that generate this value append a <br> at the end of the PEM. In case this disrupts your use case, we recommend using trimspace(). |
 | <a name="output_public_vm_0_ip"></a> [public\_vm\_0\_ip](#output\_public\_vm\_0\_ip) | The public IP address assigned to the instance, if applicable. NOTE: If you are using an aws\_eip with your instance, you should refer to the EIP's address directly and not use public\_ip as this field will change after the EIP is attached. |
 | <a name="output_ssh_private_key"></a> [ssh\_private\_key](#output\_ssh\_private\_key) | (String, Sensitive) Private key data in OpenSSH PEM (RFC 4716) format. |

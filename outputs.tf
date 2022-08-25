@@ -26,6 +26,6 @@ output "public_vm_0_ip" {
 }
 
 output "private_vm_0_ip" {
-  description = ""
+  description = "The private IP address assigned to the instance, if applicable."
   value       = aws_instance.private_vm_0.private_ip
 }
