@@ -1,0 +1,37 @@
+name: Packer
+
+on: [ workflow_dispatch ]
+
+jobs:
+  packer:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Setup Packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - \
+          && sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+          && sudo apt-get update && sudo apt-get install packer
+
+      - name: Init Packer
+        run: |
+          packer init packer/
+
+      - name: Validate Packer
+        run: |
+          packer validate packer/nginx_ami.pkr.hcl
+
+      # validate templates
+      - name: Build Template
+        run: |
+          packer build packer/nginx_ami.pkr.hcl
