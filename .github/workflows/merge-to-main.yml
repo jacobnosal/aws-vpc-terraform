@@ -50,7 +50,10 @@ jobs:
 
   terraform:
     runs-on: ubuntu-20.04
-    needs: packer
+    needs: [ packer ]
+    if: |
+      always() &&
+      (needs.packer.result == 'success' || needs.packer.result == 'skipped') 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
