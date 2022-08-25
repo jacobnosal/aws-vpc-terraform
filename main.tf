@@ -138,9 +138,10 @@ resource "aws_instance" "public_vm_0" {
 }
 
 resource "aws_volume_attachment" "public_vm_ebs_volume_0_attachment" {
-  device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.public_vm_ebs_volume_0.id
-  instance_id = aws_instance.public_vm_0.id
+  device_name                    = "/dev/sdh"
+  volume_id                      = aws_ebs_volume.public_vm_ebs_volume_0.id
+  instance_id                    = aws_instance.public_vm_0.id
+  stop_instance_before_detaching = true
 }
 
 resource "tls_private_key" "public_vm_0" {
