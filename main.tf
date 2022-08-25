@@ -102,7 +102,7 @@ resource "aws_security_group_rule" "allow_outbound_internet" {
 data "aws_ami" "nginx" {
   most_recent = true
   owners      = ["self"]
-  filter = {
+  filter {
     name   = "name"
     values = ["amzn_nginx-*"]
   }
