@@ -31,15 +31,18 @@ build {
   ]
 
   provisioner "shell" {
-    // environment_vars = [
-    //   "FOO=hello world",
-    // ]
+    name = ""
     inline = [
       "sudo amazon-linux-extras enable epel",
       "sudo yum install epel-release -y",
-      "sudo yum install nginx -y",
-      "sudo yum update -y"
+      "sudo yum update -y",
+      "udo yum install python3-pip -y",
+      "sudo pip install ansible"
     ]
+  }
+
+  provisioner "ansible-local" {
+    playbook_file   = "./nginx_playbook.yml"
   }
 
 }
